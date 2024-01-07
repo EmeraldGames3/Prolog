@@ -1,0 +1,144 @@
+%Aufgabe 1
+last_element([X], X):- !.
+last_element([_|Rest], Last) :- last_element(Rest, Last).
+
+
+%Aufgabe 2
+second_last_element([X, _], X) :- !.
+second_last_element([_ | Rest], SecondLast) :-
+    second_last_element(Rest, SecondLast).
+
+
+%Aufgabe 3
+kth_element([X|_], 1, X) :- !.
+kth_element([_|Tail], K, Element) :-
+    K > 1,
+    K1 is K - 1,
+    kth_element(Tail, K1, Element).
+
+
+%Aufgabe 4
+count_elements([], 0) :- !.
+count_elements([_|Tail], Count) :-
+    count_elements(Tail, TailCount),
+    Count is TailCount + 1.
+
+
+%Aufgabe 5
+reverse_list([], []).
+reverse_list([Head|Tail], Reversed) :-
+    reverse_list(Tail, TailReversed),
+    append(TailReversed, [Head], Reversed).
+
+
+%Aufgabe 6
+is_palindrome([]).
+is_palindrome([_]).
+is_palindrome([First|Rest]) :-
+    append(Middle, [Last], Rest),
+    First = Last,
+    is_palindrome(Middle).
+
+
+%Aufgabe 7
+duplicate_elements([], []) :- !.
+duplicate_elements([Head | Tail], Duplicated) :-
+    duplicate_elements(Tail, DuplicatedTail),
+	Duplicated = [Head, Head | DuplicatedTail].
+
+
+%Aufgabe 8
+range(End, End, [End]) :- !.
+range(Start, End, [Start|Rest]) :-
+    Start < End,
+    NextStart is Start + 1,
+    range(NextStart, End, Rest).
+
+
+%Aufgabe 9
+ggt(X, 0, X) :- !.
+ggt(X, Y, GGT) :-
+    Y > 0,
+    Z is X mod Y,
+    ggt(Y, Z, GGT).
+kgv(X, Y, KGV) :-
+    ggt(X, Y, GGT),
+    KGV is (X * Y) / GGT.
+
+
+%Aufgabe 10
+% Definieren der Zahlen in Wörtern
+number_words(0, zero).
+number_words(1, one).
+number_words(2, two).
+number_words(3, three).
+number_words(4, four).
+number_words(5, five).
+number_words(6, six).
+number_words(7, seven).
+number_words(8, eight).
+number_words(9, nine).
+
+% Basisfall: Wenn die Zahl kleiner als 10 ist, schreibe sie in Wörtern
+full_words(Number) :-
+    Number < 10,
+    number_words(Number, Word),
+    write(Word),
+    !.
+
+% Rekursive Regel: Wandeln Sie die erste Ziffer in Wörter um und bearbeiten Sie den Rest der Zahl.
+full_words(Number) :-
+    Number >= 10,
+    Digit is Number mod 10,
+    Rest is Number // 10,
+    full_words(Rest),
+    write(' '),
+    number_words(Digit, Word),
+    write(Word).
+
+
+%Aufgabe 11
+lcm(X, Y, LCM) :-
+    GCD is gcd(X, Y),
+    LCM is abs(X * Y) // GCD.
+list_lcm([], 1) :- !.
+list_lcm([X], X) :- !.
+list_lcm([X, Y | Rest], LCM) :-
+    lcm(X, Y, LCM1),
+    list_lcm([LCM1 | Rest], LCM).
+
+
+%Aufgabe 12
+gcd(X, Y, GCD) :-
+    GCD is gcd(X, Y).
+list_gcd([], 0) :- !.
+list_gcd([X], X) :- !.
+list_gcd([X, Y | Rest], GCD) :-
+    gcd(X, Y, GCD1),
+    list_gcd([GCD1 | Rest], GCD).
+
+
+
+%Aufgabe 13
+% Predicate to generate permutations of a list
+permutation([], []).
+permutation(List, [H|Perm]) :-
+    select(H, List, Rest),
+    permutation(Rest, Perm).
+
+% Predicate to remove duplicates from a list
+remove_duplicates([], []).
+remove_duplicates([X|Xs], Ys) :-
+    member(X, Xs),
+    !,
+    remove_duplicates(Xs, Ys).
+remove_duplicates([X|Xs], [X|Ys]) :-
+    remove_duplicates(Xs, Ys).
+
+% Predicate to convert a list to a set and generate permutations
+list_to_set_permutations(List, Permutations) :-
+    remove_duplicates(List, Set),
+    permutation(Set, Permutations).
+
+
+
