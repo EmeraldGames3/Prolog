@@ -1,0 +1,56 @@
+playsGuitar(Alexander) - Stelligkeit 1
+loves(Vincent,Mia) - Stelligkeit 2
+jealous(marsellus,W) - Stelligkeit 2
+hide(X,father(father,(father(butch)))) - Stelligkeit 2
+
+
+
+Wissenbank 1
+geist(logan).
+geist(hesh).
+geist(elias).
+spieltFussball(elias).
+party.
+
+geist(logan) := true
+spieltFussball(logan) := false
+spieltFussball(hesh) := false
+klein(hesh) => procedure `klein(A)' does not exist
+party := true
+volleyballspiel => procedure `volleyballspiel' does not exist
+
+
+
+Wissenbank 2
+happy(yolanda). %(Fakt)
+listensToMusic(mia). %(Fakt)
+listensToMusic(yolanda):- happy(yolanda). %(Regel)
+playsGuitar(mia):- listensToMusic(mia). %(Regel)
+playsGuitar(yolanda):- listensToMusic(yolanda). %(Regel)
+
+playsGuitar(yolanda) :- true
+
+happy(yolanda) - Dies ist ein Fakt und hat eine Stelligkeit von 1, da es nur ein Argument (yolanda) gibt.
+
+listensToMusic(mia) - Dies ist ebenfalls ein Fakt und hat eine Stelligkeit von 1, da es nur ein Argument (mia) gibt.
+
+listensToMusic(yolanda):- happy(yolanda). - Dies ist eine Regel und hat auch eine Stelligkeit von 1, da das Prädikat listensToMusic(yolanda) von der Stimmigkeit des Prädikats happy(yolanda) abhängt, wobei yolanda das Argument ist.
+
+Die anderen beiden Regeln, playsGuitar(mia):- listensToMusic(mia). und playsGuitar(yolanda):- listensToMusic(yolanda)., sind auch einstellig, da sie beide von listensToMusic(mia) bzw. listensToMusic(yolanda) abhängen und nur ein Argument haben (mia bzw. yolanda).
+
+
+
+Variablen in Prolog
+frau(mia).
+frau(jody).
+frau(yolanda).
+liebt(vincent,mia).
+liebt(marsellus,mia).
+liebt(pumpkin,honey_bunny).
+liebt(honey_bunny,pumpkin).
+neidisch(X,Y):- liebt(X,Z), liebt(Y,Z).
+
+frau(X) -> (X = mia, X = jody, X = yolanda)
+liebt(marsellus,X), frau(X) -> (X = mia)
+liebt(pumpkin,X), frau(X) := false
+neidisch(marsellus,W) -> (W = vincent, W = marsellus)
