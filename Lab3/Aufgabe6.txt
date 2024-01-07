@@ -1,0 +1,9 @@
+% Prädikat, das prüft, ob X größer oder gleich Y ist
+vergleiche(X, Y) :-
+    X >= Y,
+    write(X), write(' ist groesser oder gleich '), write(Y), nl, !.
+
+% Prädikat, das prüft, ob X kleiner als Y ist
+vergleiche(X, Y) :-
+    X < Y,
+    write(X), write(' ist kleiner als '), write(Y), nl, !.

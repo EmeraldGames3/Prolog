@@ -1,0 +1,66 @@
+connected(1,2).
+connected(3,4).
+connected(5,6).
+connected(7,8).
+connected(9,10).
+connected(12,13).
+connected(13,14).
+connected(15,16).
+connected(17,18).
+connected(19,20).
+connected(4,1).
+connected(6,3).
+connected(4,7).
+connected(6,11). 
+connected(14,9).
+connected(11,15).
+connected(16,12).
+connected(14,17).
+connected(16,19).
+
+% Base case: If there is a direct connection (one-way street) between point A and B, there is a path from A to B.
+path(A, B) :- connected(A, B), !.
+% Recursive case: There is a path from A to B if there is a connection from A to C and a path from C to B exists.
+path(A, B) :- connected(A, C), path(C, B), !.
+
+
+?- path(1, 2). => true
+?- path(4, 1). => true
+?- path(6, 11). => true
+?- path(16, 19). => true
+?- path(2, 1). => false
+?- path(10, 9). => false
+
+
+?- path(5, 10). => true
+
+?- path(1, X). => (
+X = 2 ;
+X = 1 ;
+X = 4 ;
+X = 7 ;
+X = 8 ;
+X = 3 ;
+X = 6 ;
+X = 11 ;
+X = 15 ;
+X = 16 ;
+X = 12 ;
+X = 13 ;
+X = 14 ;
+X = 17 ;
+X = 18 ;
+X = 19 ;
+X = 20.
+)
+
+?- path(13, X). => (
+X = 14 ;
+X = 17 ;
+X = 18 ;
+X = 19 ;
+X = 20 ;
+X = 9 ;
+X = 10 ;
+X = 13.
+)

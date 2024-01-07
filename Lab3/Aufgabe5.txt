@@ -1,0 +1,9 @@
+% Basisfall: Wenn die Zahl 0 erreicht ist, beende die Rekursion.
+zahle_abwaerts(0) :- write(0), nl, !.
+
+% Rekursive Regel: Zähle runter bis wir 0 erreichen.
+zahle_abwaerts(Zahl) :-
+    Zahl > 0,              
+    write(Zahl), nl,       
+    NeuerWert is Zahl - 1, 
+    zahle_abwaerts(NeuerWert), !.

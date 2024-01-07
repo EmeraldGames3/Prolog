@@ -1,0 +1,14 @@
+% Fakten mit dem Prädikat directlyIn/2
+directlyIn(olga, katarina).
+directlyIn(natasha, olga).
+directlyIn(irina, natasha).
+
+% Rekursives Prädikat in/2
+in(X, Y) :- directlyIn(X, Y), !.  
+in(X, Y) :- directlyIn(X, Z), in(Z, Y).  
+
+?- in(olga,katarina)
+true
+
+?- in(katarina, natasha)
+false
