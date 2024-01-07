@@ -1,0 +1,52 @@
+% Parents
+mutter(ron, molly).
+mutter(hermione, molly).
+mutter(ginny, molly).
+mutter(rose, hermione).
+mutter(hugo, hermione).
+mutter(james_sirius, ginny).
+mutter(albus_severus, ginny).
+mutter(lily_luna, ginny).
+
+vater(ron, arthur).
+vater(hermione, arthur).
+vater(ginny, arthur).
+vater(rose, ron).
+vater(hugo, ron).
+vater(james_sirius, harry).
+vater(albus_severus, harry).
+vater(lily_luna, harry).
+
+% Children (can be derived from parents)
+tochter(arthur, ginny).
+tochter(harry, lily_luna).
+tochter(ron, rose).
+
+sohn(arthur, ron).
+sohn(harry, james_sirius).
+sohn(harry, albus_severus).
+sohn(ron, hugo).
+
+% Siblings
+schwester(ron, ginny).
+schwester(harry, hermione).
+schwester(james_sirius, lily_luna).
+schwester(albus_severus, lily_luna).
+
+bruder(ginny, ron).
+bruder(hermione, ron).
+bruder(lily_luna, james_sirius).
+bruder(lily_luna, albus_severus).
+
+% Grandparents
+grossvater(rose, arthur).
+grossvater(hugo, arthur).
+grossvater(james_sirius, arthur).
+grossvater(albus_severus, arthur).
+grossvater(lily_luna, arthur).
+
+grossvater(rose, molly).
+grossvater(hugo, molly).
+grossvater(james_sirius, molly).
+grossvater(albus_severus, molly).
+grossvater(lily_luna, molly).

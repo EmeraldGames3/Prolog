@@ -1,0 +1,19 @@
+% Fakten
+hungrig(lena).
+mutter(lena, otto).
+sterblich(X) :- mensch(X).
+sterblich(sokrates).
+hunde_moechten_wurst(X) :- hund(X).
+mag(pluto, Y) :- gibt_mickey(Y, pluto).
+weibliches_kind(X, Y) :- tochter(Y, X).
+mag(lena, Y) :- schenkt(lena, Y), (schokolade(Y) ; kekse(Y)).
+hunde_moechten_wurst(X) :- hund(X).
+
+% Regeln
+gut_singen_koennen(X) :- singen_koennen(X).
+gut_kochen_koennen(X) :- kochen_koennen(X).
+mag(lena, Y) :- schenkt(lena, Y), (schokolade(Y) ; kekse(Y)).
+mensch(X).
+hund(X).
+gibt_mickey(schokolade, pluto).
+gibt_mickey(kekse, pluto).

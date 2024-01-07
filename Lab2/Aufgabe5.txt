@@ -1,0 +1,25 @@
+woman(vincent). - Dies ist ein Fakt.
+
+woman(mia). - Dies ist auch ein Fakt.
+
+man(jules). - Ebenfalls ein Fakt.
+
+person(X):- man(X); woman(X).
+Dies ist eine Regel.
+Regelkopf: person(X)
+Regelkörper: man(X); woman(X) (das Semikolon steht für "oder", also ist X eine Person, wenn X ein Mann oder eine Frau ist).
+
+loves(X,Y):- father(X,Y).
+Dies ist eine Regel.
+Regelkopf: loves(X,Y)
+Regelkörper: father(X,Y) (X liebt Y, wenn X der Vater von Y ist).
+
+father(Y,Z):- man(Y), son(Z,Y).
+Dies ist eine Regel.
+Regelkopf: father(Y,Z)
+Regelkörper: man(Y), son(Z,Y) (Y ist der Vater von Z, wenn Y ein Mann ist und Z der Sohn von Y ist).
+
+father(Y,Z):- man(Y), daughter(Z,Y).
+Dies ist eine Regel.
+Regelkopf: father(Y,Z)
+Regelkörper: man(Y), daughter(Z,Y) (Y ist der Vater von Z, wenn Y ein Mann ist und Z die Tochter von Y ist).

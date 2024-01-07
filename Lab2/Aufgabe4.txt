@@ -1,0 +1,10 @@
+loves(Vincent,mia) - Komplexer Term (Prädikat). Funktor: loves, Stelligkeit: 2.
+'loves(Vincent,mia)' - Atom (weil es in einfache Anführungszeichen eingeschlossen ist).
+Butch(boxer) - Komplexer Term. Funktor: Butch, Stelligkeit: 1.
+boxer(Butch) - Komplexer Term. Funktor: boxer, Stelligkeit: 1.
+and(big(burger),kahuna(burger)) - Komplexer Term. Funktor: and, Stelligkeit: 2. Dieser Term enthält zwei weitere komplexe Terme: big(burger) und kahuna(burger), beide mit einer Stelligkeit von 1.
+and(big(X),kahuna(X)) - Komplexer Term. Funktor: and, Stelligkeit: 2. X ist hier eine Variable.
+_and(big(X),kahuna(X)) - Komplexer Term. Funktor: _and, Stelligkeit: 2. Der führende Unterstrich macht es nicht zu einer Variablen, da er Teil des Funktornamens ist.
+(Butch kills Vincent) - Dies ist kein gültiger Prolog-Term wie geschrieben; er würde als Fehler interpretiert werden, weil der Funktor für die Terme in Klammern fehlt.
+kills(Butch Vincent) - Dies ist ein Fehler in Prolog aufgrund des Fehlens eines Kommas, das die Argumente trennt. Prolog erwartet ein Komma, um Terme in einem komplexen Term zu trennen.
+kills(Butch,Vincent) - Komplexer Term. Funktor: kills, Stelligkeit: 2.
