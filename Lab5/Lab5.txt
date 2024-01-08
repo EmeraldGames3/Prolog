@@ -1,0 +1,131 @@
+%Aufgabe 1
+remove_elements(_, [], []) :- !.
+remove_elements(ToRemove, [X|Xs], Result) :-
+    member(X, ToRemove), !,
+    remove_elements(ToRemove, Xs, Result).
+remove_elements(ToRemove, [X|Xs], [X|Result]) :-
+    remove_elements(ToRemove, Xs, Result).
+
+difference(Set1, Set2, Result) :-
+    remove_elements(Set2, Set1, Result).
+
+
+%Aufgabe 2
+union([], L, L) :- !.
+union([H|T],L2, Result):-
+    member(H,L2), !,
+    union(T,L2,Result).
+union([H|T], L2, [H|Result]):-
+    union(T,L2,Result).
+
+
+%Aufgabe 3
+intersection([], _, []) :- !.
+intersection([H|T], L2, Result) :-
+    member(H, L2),
+    intersection(T, L2, RestIntersection),
+    Result = [H | RestIntersection],
+    !.
+intersection([_|T], L2, Result) :-
+    intersection(T, L2, Result).
+
+
+%Aufgabe 4
+removeElementK([_|Tail],1,Tail) :- !.
+removeElementK([Head|Tail],K,[Head|Result]):- 
+    K1 is K - 1,
+    removeElementK(Tail,K1,Result).
+
+
+%Aufgabe 5
+addElementK(Element, 1, List, [Element | List]) :- !.
+addElementK(Element, K, [Head | Tail], [Head | Result]) :-
+    K1 is K - 1,
+    addElementK(Element, K1, Tail, Result).
+
+
+%Aufgabe 6
+range(End, End, [End]) :- !.
+range(Start, End, [Start | ResultingTail]) :-
+    Start < End,
+    Start1 is Start + 1,
+    range(Start1, End, ResultingTail).
+
+
+%Aufgabe 7
+max([Max], Max) :- !.
+max([Head | Tail], Max) :-
+    max(Tail, TempMax),
+    Head >= TempMax,
+    Max = Head,
+    !.
+max([Head | Tail], Max) :-
+    max(Tail, TempMax),
+    Head < TempMax,
+    Max = TempMax,
+    !.
+
+
+%Aufgabe 8
+min([Min], Min) :- !.
+min([Head | Tail], Min) :-
+    min(Tail, TempMin),
+    Head =< TempMin,
+    Min = Head,
+    !.
+min([Head | Tail], Min) :-
+    min(Tail, Min),
+    Head > Min,
+    !.
+
+
+%Aufgabe 9
+removeMax([], [], _) :- !.
+removeMax([Max|Tail], Result, Max) :-
+    removeMax(Tail, Result, Max),
+    !.
+removeMax([Head|Tail], [Head|Result], Max) :-
+    Head \= Max,
+    removeMax(Tail, Result, Max),
+    !.
+removeMax(List, Result) :-
+    max(List, Max),
+    removeMax(List, Result, Max),
+    !.
+
+
+%Aufgabe 10
+removeMin([], [], _) :- !.
+removeMin([Min | Tail], Result, Min) :-
+    removeMin(Tail, Result, Min),
+    !.
+removeMin([Head | Tail], [Head | Result], Min) :-
+    Head \= Min,
+    removeMin(Tail, Result, Min),
+    !.
+removeMin(List, Result) :-
+    min(List, Min),
+    removeMin(List, Result, Min),
+    !.
+
+
+%Aufgabe 11
+alternating_sum(List, Result) :-
+    alternating_sum_acc(List, 0, Result).
+alternating_sum_acc([], Acc, Acc) :- !.
+alternating_sum_acc([Head|Tail], Acc, Result) :-
+    NewAcc is Acc + Head,
+    alternating_sum_skip(Tail, NewAcc, Result),
+    !.
+alternating_sum_skip([], Acc, Acc).
+alternating_sum_skip([Head|Tail], Acc, Result) :-
+    NewAcc is Acc - Head,
+    alternating_sum_acc(Tail, NewAcc, Result),
+    !.
+
+
+%Aufgabe 12
+product([], 1) :- !.
+product([Head|Tail],Result):-
+    product(Tail, Result1),
+    Result is Head * Result1.
