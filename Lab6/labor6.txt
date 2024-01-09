@@ -1,0 +1,680 @@
+%1
+%a) Definiti un predicat care determina suma a doua numere scrise in reprezentare de lista.
+%Se da o lista eterogena, formata din numere intregi si liste de cifre. Sa
+%se calculeze suma tuturor numerelor reprezentate de subliste
+reverseList(List,Result):-
+    reverseListAcc(List,[],Result).
+reverseListAcc([],Acc,Acc).
+reverseListAcc([Head|Tail],Acc,Result):-
+    reverseListAcc(Tail,[Head|Acc],Result).
+
+sum(X,Y,Result):- Result is X+Y.
+
+listToNumber(List,Number):-
+    reverseList(List,Reversed),
+    listToNumberAcc(Reversed,1,Number).
+
+listToNumberAcc([],_,0).
+listToNumberAcc([Digit|Rest], Position, Number) :-
+    CurrentValue is Digit * Position,
+    NextPosition is Position * 10,
+    listToNumberAcc(Rest, NextPosition, RestNumber),
+    Number is CurrentValue + RestNumber.
+
+numberToList(Number,List):-
+    numberToListAcc(Number,[],List).
+numberToListAcc(0,Acc,Acc).
+numberToListAcc(Number,Acc,Result):-
+    LastDigit is Number mod 10,
+    RestNumber is Number // 10,
+    numberToListAcc(RestNumber,[LastDigit|Acc],Result).
+    
+sumOfListsAsNumber(List1,List2,Sum):-
+    listToNumber(List1,Number1),
+    listToNumber(List2,Number2),
+    sum(Number1,Number2,Sum).
+sumOfListsAsList(List1,List2,Result):-
+    sumOfListsAsNumber(List1,List2,Sum),
+    numberToList(Sum,Result).
+
+sumOfSublists(List,Result):-
+    sumOfSublistsAcc(List,[],Result).
+sumOfSublistsAcc([],Acc,Acc).
+sumOfSublistsAcc([Head|Tail],Acc,Result):-
+    is_list(Head),
+    sumOfListsAsList(Head,Acc,PartialSum),
+    sumOfSublistsAcc(Tail,PartialSum,Result).
+sumOfSublistsAcc([_|Tail],Acc,Result):-
+    sumOfSublistsAcc(Tail,Acc,Result).
+% 2.
+%a) Sa se sorteze o lista cu pastrarea dublurilor
+insert_sorted(Element, [], [Element]).
+insert_sorted(Element, [Head|Tail], [Element, Head|Tail]) :- Element =< Head.
+insert_sorted(Element, [Head|Tail], [Head|Result]) :-
+    Element > Head,
+    insert_sorted(Element, Tail, Result).
+
+sortList(List, Result) :-
+    sortListAcc(List, [], Result),
+    !.
+
+sortListAcc([], Acc, Acc).
+sortListAcc([Head|Tail], Acc, Result) :-
+    insert_sorted(Head, Acc, PartialResult),
+    sortListAcc(Tail, PartialResult, Result).
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere. Sa
+%se sorteze fiecare sublista cu pastrarea dublurilor. De ex:
+%[1, 2, [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7] =>
+%[1, 2, [1, 4, 4], 3, 6, [1, 3, 7, 9, 10], 5, [1, 1, 1], 7].
+sortSublists(List,Result):-
+    sortSublistHelper(List,[],Result),
+    !.
+sortSublistHelper([],Acc,Acc).
+sortSublistHelper([H|T],Acc,Result):-
+    (  
+    	is_list(H),
+        sortList(H,Sorted),
+        append(Acc,[Sorted],NewAcc),
+        sortSublistHelper(T,NewAcc,Result)
+    ;   
+     	\+is_list(H),
+        append(Acc,[H],NewAcc),
+        sortSublistHelper(T,NewAcc,Result)
+     
+    ).
+
+
+% 3.'
+%a) Sa se sorteze o lista fara pastrarea dublurilor
+insert_sorted_no_doubles(Element, [], [Element]).
+insert_sorted_no_doubles(Element, [Head|Tail], [Element, Head|Tail]) :- Element < Head.
+insert_sorted_no_doubles(Element, [Head|Tail], [Head|Result]) :-
+    Element > Head,
+    insert_sorted_no_doubles(Element, Tail, Result).
+insert_sorted_no_doubles(Element, [Head|Tail], Result) :-
+    Element =:= Head,
+    insert_sorted_no_doubles(Element, Tail, Result).
+sortListNoDoubles(List, Result) :-
+    sortListAccNoDoubles(List, [], Result).
+sortListAccNoDoubles([], Acc, Acc).
+sortListAccNoDoubles([Head|Tail], Acc, Result) :-
+    insert_sorted_no_doubles(Head, Acc, PartialResult),
+    sortListAccNoDoubles(Tail, PartialResult, Result).
+
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere. Sa
+%se sorteze fiecare sublista fara pastrarea dublurilor. De ex:
+%[1, 2, [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7] =>
+%[1, 2, [1, 4], 3, 6, [1, 3, 7, 9, 10], 5, [1], 7].
+
+sortSublists2(List,Result):-
+    sortSublistHelper2(List,[],Result),
+    !.
+sortSublistHelper2([],Acc,Acc).
+sortSublistHelper2([H|T],Acc,Result):-
+    (  
+    	is_list(H),
+        sortListNoDoubles(H,Sorted),
+        append(Acc,[Sorted],NewAcc),
+        sortSublistHelper2(T,NewAcc,Result)
+    ;   
+     	\+is_list(H),
+        append(Acc,[H],NewAcc),
+        sortSublistHelper2(T,NewAcc,Result)
+     
+    ).
+
+% 4.
+%  Sa se interclaseze fara pastrarea dublurilor doua liste sortate.
+
+removeDuplicates(List,Result):-
+    reverseList(List,Reversed),
+    removeDuplicatesAcc(Reversed,[],Result).
+removeDuplicatesAcc([],Acc,Acc).
+removeDuplicatesAcc([Head|Tail],Acc,Result):-
+    member(Head,Acc),
+    removeDuplicatesAcc(Tail,Acc,Result).
+removeDuplicatesAcc([Head|Tail],Acc,Result):-
+    removeDuplicatesAcc(Tail,[Head|Acc],Result).
+    
+merge([], List, List).
+merge(List, [], List).
+merge([H1|T1], [H2|T2], [H1|Result]) :-
+    H1 < H2,
+    merge(T1, [H2|T2], Result).
+merge([H1|T1], [H2|T2], [H2|Result]) :-
+    H1 > H2,
+    merge([H1|T1], T2, Result).
+merge([H|T1], [H|T2], [H|Result]) :-
+    merge(T1, T2, Result).
+
+mergeLists(List1,List2,Result):-
+    merge(List1,List2,Merge),
+    removeDuplicates(Merge,Result).
+
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere
+%sortate. Sa se interclaseze fara pastrarea dublurilor toate sublistele. De
+%ex :
+%[1, [2, 3], 4, 5, [1, 4, 6], 3, [1, 3, 7, 9, 10], 5, [1, 1, 11], 8] =>
+%[1, 2, 3, 4, 6, 7, 9, 10, 11].
+mergeSublists(List,Result):-
+    mergeSublistsHelper(List,[],Result),
+    !.
+mergeSublistsHelper([],Acc,Acc).
+mergeSublistsHelper([H|T],Acc,Result):-
+    (  
+    	is_list(H),
+		mergeLists(Acc,H,NewAcc),
+        mergeSublistsHelper(T,NewAcc,Result)
+    ;   
+     	\+is_list(H),
+        mergeSublistsHelper(T,Acc,Result)
+     
+    ).
+
+
+%5.
+%a) Sa se determine pozitiile elementului maxim dintr-o lista liniara.
+
+findMax([Head|Tail],Max):-
+    findMaxHelper(Tail,Head,Max).
+findMaxHelper([],Max,Max).
+findMaxHelper([Head|Tail],CurrentMax,Max):-
+    Head >= CurrentMax,
+    findMaxHelper(Tail,Head,Max).
+findMaxHelper([Head|Tail],CurrentMax,Max):-
+    Head < CurrentMax,
+    findMaxHelper(Tail,CurrentMax,Max).
+
+findMaxPositions(List,Positions):-
+    findMax(List,Max),
+    findPositions(List,Max,1,Positions),
+    !.
+
+findPositions([],_,_,[]).
+findPositions([Element|Tail],Element,Position,[Position|Positions]):-
+    NewPosition is Position + 1,
+    findPositions(Tail,Element,NewPosition,Positions).
+findPositions([Head|Tail],Element,Position,Positions):-
+    Head =\= Element,
+    NewPosition is Position + 1,
+    findPositions(Tail,Element,NewPosition,Positions).
+
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere
+%intregi. Sa se inlocuiasca fiecare sublista cu pozitiile elementului maxim
+%din sublista respectiva. De ex:
+%[1, [2, 3], [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7] =>
+%[1, [2], [1, 3], 3, 6, [2], 5, [1, 2, 3], 7]
+
+replaceWithMaxPositions(List,Result):-
+    replaceWithMaxPositionsHelper(List,[],Result),
+    !.
+
+
+replaceWithMaxPositionsHelper([],Acc,Acc).
+replaceWithMaxPositionsHelper([H|T],Acc,Result):-
+    (  
+    	is_list(H),
+        findMaxPositions(H,Positions),
+        append(Acc,[Positions],NewAcc),
+        replaceWithMaxPositionsHelper(T,NewAcc,Result)
+    ;   
+     	\+is_list(H),
+        append(Acc,[H],NewAcc),
+        replaceWithMaxPositionsHelper(T,NewAcc,Result)
+     
+    ).
+
+% 6.
+% a) Intr-o lista L sa se inlocuiasca toate aparitiile unui element E cu
+  %elementele unei alte liste, L1. De ex: inloc([1,2,1,3,1,4],1,[10,11],X)
+  %va produce X=[10,11,2,10,11,3,10,11,4].
+
+replaceElementWithList(List1,Element,List2,Result):-
+    replace_element(List1,Element,List2,[],Result),
+    !.
+
+replace_element([],_,_,Acc,Acc).
+replace_element([E|Tail],E,L,Acc,Result):-
+    append(Acc,L,NewAcc),
+    replace_element(Tail,E,L,NewAcc,Result).
+replace_element([Head|Tail],E,L,Acc,Result):-
+    Head =\= E,
+    append(Acc,[Head],NewAcc),
+    replace_element(Tail,E,L,NewAcc,Result).
+
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere
+%intregi. In fiecare sublista sa se inlocuiasca toate aparitiile primului
+%element din sublista cu o lista data. De ex:
+%[1, [4, 1, 4], 3, 6, [7, 10, 1, 3, 9], 5, [1, 1, 1], 7] si [11, 11] =>
+%[1, [11, 11, 1, 11, 11], 3, 6, [11, 11, 10, 1, 3, 9], 5, [11 11 11 11 11 11], 7]
+
+
+replaceWithList(List,List2,Result):-
+   replaceWithListHelper(List,List2,[],Result),
+    !.
+getFirst([Head|_],Head).
+replaceWithListHelper([],_,Acc,Acc).
+replaceWithListHelper([H|T],List2,Acc,Result):-
+    (  
+    	is_list(H),
+        getFirst(H,First),
+        replaceElementWithList(H,First,List2,Replaced),
+        append(Acc,[Replaced],NewAcc),
+        replaceWithListHelper(T,List2,NewAcc,Result)
+    ;   
+     	\+is_list(H),
+        append(Acc,[H],NewAcc),
+        replaceWithListHelper(T,List2,NewAcc,Result)
+     
+    ).
+
+
+
+%7.
+% a) Definiti un predicat care determina produsul unui numar reprezentat
+% cifra cu cifra intr-o lista cu o anumita cifra. De ex: [1 9 3 5 9 9] * 2
+
+product(X,Y,Result):-
+    Result is X*Y.
+productNumberAsList(List,Digit,Result):-
+    listToNumber(List,Number),
+    !,
+    product(Number,Digit,Product),
+    numberToList(Product,Result),
+    !.
+%b) Se da o lista eterogena, formata din numere intregi si maximum 9 liste de
+%numere intregi. Sa se inlocuiasca fiecare sublista cu rezultatul
+%inmultirii sublistei cu numarul de ordine al sublistei (prima sublista cu
+%1, a 2-a cu 2, etc.). De ex:
+%[1, [2, 3], [4, 1, 4], 3, 6, [7, 5, 1, 3, 9], 5, [1, 1, 1], 7] =>
+%[1, [2, 3], [8, 2, 8], 3, 6, [2, 2, 5, 4, 1, 7], 5, [4, 4, 4], 7]
+
+multiplySublists(List,Result):-
+    multiplySublistsHelper(List,0,[],Result),
+    !.
+multiplySublistsHelper([],_,X,X).
+multiplySublistsHelper([H|T],M,Acc,Result):-
+    (  
+    	is_list(H),
+        NewM is M+1,
+        productNumberAsList(H,NewM,Product),
+        append(Acc,[Product],NewAcc),
+        multiplySublistsHelper(T,NewM,NewAcc,Result)
+    ;   
+    	\+ is_list(H),
+        append(Acc,[H],NewAcc),
+        multiplySublistsHelper(T,M,NewAcc,Result)
+    ).
+
+
+% 8. Definiti un predicat care determina succesorul unui numar reprezentat
+% cifra cu cifra intr-o lista. De ex: [1 9 3 5 9 9] => [1 9 3 6 0 0]
+
+successor(List,Result):-
+    listToNumber(List,Number),
+    !,
+    NewNumber is Number + 1,
+    numberToList(NewNumber,Result),
+    !.
+%b) Se da o lista eterogena, formata din numere intregi si liste de cifre.
+%Pentru fiecare sublista sa se determine succesorul numarului reprezentat
+%cifra cu cifra de lista respectiva. De ex:
+%[1, [2, 3], 4, 5, [6, 7, 9], 10, 11, [1, 2, 0], 6] =>
+%[1, [2, 4], 4, 5, [6, 8, 0], 10, 11, [1, 2, 1], 6]
+sublistsSuccessor(List,Result):-
+    sublistsSuccessorHelper(List,[],Result),
+    !.
+sublistsSuccessorHelper([],X,X).
+sublistsSuccessorHelper([H|T],Acc,Result):-
+    (  
+    	is_list(H),
+        successor(H,Successor),
+        append(Acc,[Successor],NewAcc),
+        sublistsSuccessorHelper(T,NewAcc,Result)
+    ;   
+    	\+ is_list(H),
+        append(Acc,[H],NewAcc),
+        sublistsSuccessorHelper(T,NewAcc,Result)
+    ).
+%9.
+%a) Dandu-se o lista liniara numerica, sa se stearga toate secventele de
+%valori consecutive. Ex: sterg([1, 2, 4, 6, 7, 8, 10], L) va produce L=[4,
+%10].
+
+
+removeConsecutive(List,Result):-
+    removeConsecutiveH(List,0,[],Result),
+    !.
+
+removeConsecutiveH([],_,Acc,Acc).
+removeConsecutiveH([X,Y],IsConsecutive,Acc,Result):-
+    X+1 =\= Y,
+    IsConsecutive =:= 0,
+    append(Acc,[X],NewAcc),
+    append(NewAcc,[Y],Result).
+removeConsecutiveH([X,Y],IsConsecutive,Acc,Result):-
+    X+1 =\= Y,
+    IsConsecutive =\= 0,
+    append(Acc,[Y],Result).
+removeConsecutiveH([X,Y],_,Acc,Result):-
+    X+1 =:= Y,
+    append(Acc,[],Result).
+    
+removeConsecutiveH([X,Y|Tail],IsConsecutive,Acc,Result):-
+    X+1 =\= Y,
+    IsConsecutive =:= 0,
+    append(Acc,[X],NewAcc),
+    removeConsecutiveH([Y|Tail],0,NewAcc,Result).
+removeConsecutiveH([X,Y|Tail],IsConsecutive,Acc,Result):-
+    X+1 =\= Y,
+    IsConsecutive =\= 0,
+    removeConsecutiveH([Y|Tail],0,Acc,Result).
+
+removeConsecutiveH([X,Y|Tail],_,Acc,Result):-
+    X+1 =:= Y,
+    removeConsecutiveH([Y|Tail],1,Acc,Result).
+% 10.
+% a) Se da o lista de numere intregi. Se cere sa se adauge in lista dupa 1-ul
+%element, al 3-lea element, al 7-lea elemen, al 15-lea element … o valoare
+%data e.
+length_list([],Acc,Acc).
+length_list([_|Tail],Acc,Result):-
+    NewAcc is Acc + 1,
+    length_list(Tail,NewAcc,Result).
+    
+generateList(Element, Number, Acc, Result) :-
+    Element >= Number,
+    Result = Acc.
+generateList(Element, Number, Acc, Result) :-
+    NewElement is 1 + Element * 2,
+    NewElement < Number,
+    append(Acc, [NewElement], NewAcc),
+    generateList(NewElement, Number, NewAcc, Result).
+generateList(Element, Number, Acc, Result) :-
+    NewElement is 1 + Element * 2,
+    NewElement >= Number,
+    Result = Acc.
+
+insertAfterPosition([], _, _, _, Acc, Acc).
+insertAfterPosition([Head|Tail], Element, CurrentPosition, Position, Acc, Result) :-
+    CurrentPosition =:= Position,
+    NewPosition is CurrentPosition + 1,
+    append(Acc, [Head, Element], NewAcc),
+    insertAfterPosition(Tail, Element, NewPosition, Position, NewAcc, Result).
+insertAfterPosition([Head|Tail], Element, CurrentPosition, Position, Acc, Result) :-
+    CurrentPosition < Position,
+    NewPosition is CurrentPosition + 1,
+    append(Acc, [Head], NewAcc),
+    insertAfterPosition(Tail, Element, NewPosition, Position, NewAcc, Result).
+insertAfterPosition([Head|Tail], Element, CurrentPosition, Position, Acc, Result) :-
+    CurrentPosition > Position,
+    NewPosition is CurrentPosition + 1,
+    append(Acc, [Head], NewAcc),
+    insertAfterPosition(Tail, Element, NewPosition, Position, NewAcc, Result).
+
+addOneToAll([],Acc,Acc).
+addOneToAll([Head|Tail],Acc,Result):-
+    Value is Head+1,
+    append(Acc,[Value],NewAcc),
+    addOneToAll(Tail,NewAcc,Result).
+
+insertAfterPositions(_,_,[],Acc,Acc).
+insertAfterPositions(List,Element,[Position|RestPositions],_,Result):-
+    insertAfterPosition(List,Element,1,Position,[],Insertion),
+    addOneToAll(RestPositions,[],Rest),
+    insertAfterPositions(Insertion,Element,Rest,Insertion,Result).
+    
+addToList(List,Element,Result):-
+    length_list(List,0,Length),
+    generateList(0,Length,[],Indexes),
+    !,
+    insertAfterPositions(List,Element,Indexes,[],Result),
+    !.
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere 
+%intregi. Lista incepe cu un numar si nu sunt 2 elemente consecutive care
+%sunt liste. Se cere ca in fiecare sublista sa se adauge dupa 1-ul, al 3-
+%lea, al 7-lea… element valoarea care se gaseste inainte de sublista in
+%lista eterogena. De ex:
+%[1, [2, 3], 7, [4, 1, 4], 3, 6, [7, 5, 1, 3, 9, 8, 2, 7], 5] =>
+%[1, [2, 1, 3], 7, [4, 7, 1, 4, 7], 3, 6, [7, 6, 5, 1, 6, 3, 9, 8, 2, 6,
+%7], 5].
+
+addToSublists([Head|Tail],Result):-
+    addToSublistsHelper([Head|Tail],Head,[],Result),
+    !.
+addToSublistsHelper([],_,X,X).
+addToSublistsHelper([H|T],Prev,Acc,Result):-
+    (  
+    	is_list(H),
+        addToList(H,Prev,Inserted),
+        append(Acc,[Inserted],NewAcc),
+        addToSublistsHelper(T,Prev,NewAcc,Result)
+    ;   
+    	\+ is_list(H),
+        append(Acc,[H],NewAcc),
+        addToSublistsHelper(T,H,NewAcc,Result)
+    ).
+%11.
+%a) Se da o lista de numere intregi. Se cere sa se scrie de 2 ori in lista
+%fiecare numar prim.
+list_length([], 0).
+list_length([_|Tail], Length) :-
+    list_length(Tail, TailLength),
+    Length is TailLength + 1.
+
+is_prime(2).
+is_prime(X) :-
+    X > 2,
+    \+ is_even(X),
+    \+ has_divisors(X, 2).
+
+% Helper predicate to check if a number has divisors
+has_divisors(N, Factor) :-
+    N mod Factor =:= 0.
+has_divisors(N, Factor) :-
+    Factor * Factor < N,
+    NextFactor is Factor + 1,
+    has_divisors(N, NextFactor).
+
+% Helper predicate to check if a number is even
+is_even(N) :-
+    N mod 2 =:= 0.
+
+
+
+doublePrimes(List,Result):-
+    doublePrimesHelper(List,[],Result).
+doublePrimesHelper([],Acc,Acc).
+doublePrimesHelper([Head|Tail],Acc,Result):-
+    (  
+    	\+is_prime(Head),
+        append(Acc,[Head],NewAcc),
+        doublePrimesHelper(Tail,NewAcc,Result)
+        
+    ;   
+    
+    	is_prime(Head),
+        append(Acc,[Head,Head],NewAcc),
+        doublePrimesHelper(Tail,NewAcc,Result)
+        
+    ).
+
+
+
+% 12.
+% a) Sa se inlocuiasca toate aparitiile unui element dintr-o lista cu un alt element.
+
+replaceElement([],_,_,Acc,Acc).
+replaceElement([Head|Tail],E1,E2,Acc,Result):-
+    Head =:= E1,
+    append(Acc,[E2],NewAcc),
+    replaceElement(Tail,E1,E2,NewAcc,Result).
+replaceElement([Head|Tail],E1,E2,Acc,Result):-
+    Head =\= E1,
+    append(Acc,[Head],NewAcc),
+    replaceElement(Tail,E1,E2,NewAcc,Result).
+
+%b) Se da o lista eterogena, formata din numere intregi si liste de numere intregi.
+% Se cere ca toate aparitiile elementului maxim (dintre valorile
+%intregi ale listei) sa fie inlocuite in fiecare sublista cu maximul sublistei respective.
+% De ex:
+
+findMaxInSublist([Head|Tail],Max):-
+    findMaxInSublistHelper(Tail,Head,Max).
+findMaxInSublistHelper([],Max,Max).
+findMaxInSublistHelper([Head|Tail],CurrentMax,Max):-
+    (   
+    	Head > CurrentMax,
+        findMaxInSublistHelper(Tail,Head,Max)
+    ;   
+    	Head =< CurrentMax,
+        findMaxInSublistHelper(Tail,CurrentMax,Max)
+    ).
+
+findMaxInList([Head|Tail],Max):-
+        findMaxInListHelper(Tail,Head,Max).
+findMaxInListHelper([],Max,Max).
+findMaxInListHelper([Head|Tail],CurrentMax,Max):-
+    (   \+ is_list(Head),
+    	Head > CurrentMax,
+        findMaxInListHelper(Tail,Head,Max)
+    ;   
+    	\+ is_list(Head),
+    	Head =< CurrentMax,
+        findMaxInListHelper(Tail,CurrentMax,Max)
+    ;   
+    	is_list(Head),
+        findMaxInListHelper(Tail,CurrentMax,Max)
+    ).
+
+replaceMaxInSublist(List,Result):-
+    findMaxInList(List,Max),
+    !,
+    replaceMaxHelper(List,Max,[],Result),
+    !.
+
+replaceMaxHelper([],_,Acc,Acc).
+replaceMaxHelper([Head|Tail],Max,Acc,Result):-
+    (   
+    	\+ is_list(Head),
+        append(Acc,[Head],NewAcc),
+        replaceMaxHelper(Tail,Max,NewAcc,Result)
+    ;   
+    	is_list(Head),
+        \+ member(Max,Head),
+        append(Acc,[Head],NewAcc),
+        replaceMaxHelper(Tail,Max,NewAcc,Result)
+    
+    ;   
+    	is_list(Head),
+        member(Max,Head),
+        findMaxInSublist(Head,SublistMax),
+        replaceElement(Head,Max,SublistMax,[],ResultedSublist),
+        append(Acc,[ResultedSublist],NewAcc),
+        replaceMaxHelper(Tail,Max,NewAcc,Result)
+    ).
+
+%13. 
+%a) Sa se adauge dupa fiecare element dintr-o lista divizorii elementului.
+
+findDivisors(Number, Divisors) :-
+    findDivisorsHelper(Number, 2, [], Divisors).
+
+findDivisorsHelper(Number, Divisor, Acc, Acc) :-
+    Divisor >= Number.
+
+findDivisorsHelper(Number, Divisor, Acc, Result) :-
+    Divisor < Number,
+    0 is Number mod Divisor,
+    append(Acc,[Divisor],NewAcc),
+    NextDivisor is Divisor + 1,
+    findDivisorsHelper(Number, NextDivisor,NewAcc, Result).
+
+findDivisorsHelper(Number, Divisor, Acc, Result) :-
+    Divisor < Number,
+    \+ 0 is Number mod Divisor,
+    NextDivisor is Divisor + 1,
+    findDivisorsHelper(Number, NextDivisor, Acc, Result).
+
+addDivisorsToList([],Acc,Acc).
+addDivisorsToList([Head|Tail],Acc,Result):-
+    findDivisors(Head,Divisors),
+    append(Acc,[Head],NewAcc),
+    append(NewAcc,Divisors,PartialResult),
+    addDivisorsToList(Tail,PartialResult,Result).
+
+    
+% 14.
+%a) Definiti un predicat care determina predecesorul unui numar reprezentat
+% cifra cu cifra intr-o lista. De ex: [1 9 3 6 0 0] => [1 9 3 5 9 9]
+power(1, _, 1, 1).
+power(_, 0, Acc, Acc).
+power(X, Y, Acc, Result) :-
+    NewValue is Acc * X,
+    Count is Y - 1,
+    power(X, Count, NewValue, Result).
+
+fromListToNumber(List, Number) :-
+    list_length(List, Length),
+    Exponent is Length - 1,
+    power(10, Exponent, 1, Power),
+    fromListToNumberHelper(List, Power, 0, Number).
+
+fromListToNumberHelper([], _, Acc, Acc).
+fromListToNumberHelper([Digit|Rest], Power, Acc, Number) :-
+    NewAcc is Acc + Digit * Power,
+    NewPower is Power // 10,
+    fromListToNumberHelper(Rest, NewPower, NewAcc, Number).
+
+fromNumberToList(Number, List) :-
+    fromNumberToListHelper(Number, [], List).
+
+fromNumberToListHelper(0, Acc, Result) :-
+    reverse(Acc, Result).
+
+fromNumberToListHelper(Number, Acc, Result) :-
+    Number > 0,
+    Digit is Number mod 10,
+    NewNumber is Number // 10,
+    append(Acc, [Digit], NewAcc),
+    fromNumberToListHelper(NewNumber, NewAcc, Result).
+
+predecesor(X,Predecesor):-
+    number(X),
+    Predecesor is X - 1.
+
+predecesorOfNumberAsList(List,Predecesor):-
+    listToNumber(List,Number),
+    !,
+    predecesor(Number,Result),
+    numberToList(Result,Predecesor),
+    !.
+
+%15.
+%a) Sa se determine cea mai lunga secventa de numere pare consecutive dintr-o
+%lista (daca sunt mai multe secvente de lungime maxima, una dintre ele).
+
+longestSequence(List,Result):-
+    longestSequenceHelper(List,0,0,[],[],Result),
+    !.
+longestSequenceHelper([],_,_,_,Acc,Acc).
+longestSequenceHelper([X],Current,Max,Seq,_,Result):-
+    is_even(X),
+    NewCurrent is Current + 1,
+    NewCurrent>Max,
+    append(Seq,[X],NewSeq),
+    Result = NewSeq.
+longestSequenceHelper([Head|Tail],CurrentLength,MaxLength,CurrentSequence,MaxSequence,Result):-
+	is_even(Head),
+    New is CurrentLength + 1,
+    append(CurrentSequence,[Head],S),
+    longestSequenceHelper(Tail,New,MaxLength,S,MaxSequence,Result).
+
+longestSequenceHelper([Head|Tail],CurrentLength,MaxLength,_,MaxSequence,Result):-
+    \+ is_even(Head),
+    CurrentLength =< MaxLength,
+    longestSequenceHelper(Tail,0,MaxLength,[],MaxSequence,Result).
+longestSequenceHelper([Head|Tail],CurrentLength,MaxLength,CurrentSequence,_,Result):-
+    \+ is_even(Head),
+    CurrentLength > MaxLength,
+    longestSequenceHelper(Tail,0,CurrentLength,[],CurrentSequence,Result).
